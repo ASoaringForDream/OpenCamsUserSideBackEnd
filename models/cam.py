@@ -19,6 +19,7 @@ class Cam(db.Model):
     country = db.Column(db.String(256))
     state = db.Column(db.String(256))
     city = db.Column(db.String(256))
+    score = db.Column(db.Integer, default=0)
 
     def to_json(self):
         tag_int = []
