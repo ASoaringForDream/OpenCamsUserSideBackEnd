@@ -1,7 +1,9 @@
 from flask import Blueprint, request
 import datetime
+from sqlalchemy import func
 from models.cam import Cam
 from models.operation import Like, DisLike, Collect, Visit
+from exts import db as datebase
 
 db = Blueprint("personal", __name__, url_prefix='/user')
 
@@ -31,14 +33,19 @@ def queryHistory():
     id = data.get('id')
     current = int(data.get('current'))
     pageSize = int(data.get('pageSize'))
-    all = Visit.query.filter(id == Visit.uid).count()
     time = datetime.timedelta(days=15)
-    d = datetime.datetime.now() -time
-    visits = Visit.query.filter(id == Visit.uid, Visit.visittime > d).order_by(Visit.visittime.desc()).offset((current - 1) * pageSize).limit(pageSize).all()
-    # datetime.timedelta.days
+    d = datetime.datetime.now() - time
+    all = datebase.session.query(Visit.cid, Visit.uid, func.max(Visit.visittime)).filter(id == Visit.uid, Visit.visittime > d).group_by(Visit.cid).count()
+    visits = datebase.session.query(Visit.cid, Visit.uid, func.max(Visit.visittime), Cam).join(Cam, Visit.cid == Cam.id).filter(id == Visit.uid, Visit.visittime > d).group_by(Visit.cid).order_by(func.max(Visit.visittime).desc()).offset((current - 1) * pageSize).limit(pageSize).all()
+    print(visits)
     res = []
     for item in visits:
-        res.append(item.to_json())
+        res.append({
+            "cid": item[0],
+            "uid": item[1],
+            "visittime": item[2],
+            "cam": item[3].to_json()
+        })
     return  {
         "errno": 0,
         "errmsg": '',
