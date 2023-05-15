@@ -22,14 +22,14 @@ def queryCams():
         or_(Cam.country == country, country == None, country == ''),
         or_(Cam.state == state, state == None, state == ''),
         or_(search == None, Cam.desc.like('%' + str(search) + '%'), search == ''),
-        or_(tag == None, Cam.tag == tag, Cam.desc.like('%' + str(tag) + ',%'), Cam.desc.like('%,' + str(tag) + '%'), tag == ''),
+        or_(tag == None, Cam.tag == tag, Cam.tag.like(str(tag) + ',%'), Cam.tag.like('%,' + str(tag) + ',%'), Cam.tag.like('%,' + str(tag)), tag == ''),
         or_(Cam.mainTag == mainTag, mainTag == None, mainTag == '')).all()
     cams = Cam.query.filter(
         or_(Cam.city == city, city == None, city == ''),
         or_(Cam.country == country, country == None, country == ''),
         or_(Cam.state == state, state == None, state == ''),
         or_(search == None, Cam.desc.like('%' + str(search) + '%'), search == ''),
-        or_(tag == None, Cam.tag == tag, Cam.desc.like('%' + str(tag) + ',%'), Cam.desc.like('%,' + str(tag) + '%'), tag == ''),
+        or_(tag == None, Cam.tag == tag, Cam.tag.like(str(tag) + ',%'), Cam.tag.like('%,' + str(tag) + ',%'), Cam.tag.like('%,' + str(tag)), tag == ''),
         or_(Cam.mainTag == mainTag, mainTag == None, mainTag == '')).offset((current - 1) * pageSize).limit(pageSize).all()
     res = []
     for item in cams:
