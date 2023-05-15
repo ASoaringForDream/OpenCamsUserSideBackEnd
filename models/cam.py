@@ -45,6 +45,36 @@ class Cam(db.Model):
             "state": self.state,
             "city": self.city
         }
+    def to_json1(self, isLike, isDisLike, isCollect, likenum, dislikenum, collectnum):
+        tag_int = []
+        if self.tag != None and self.tag != '':
+            tag = self.tag.split(',')
+            for item in tag:
+                tag_int.append(int(item))
+
+        return {
+            "id": self.id,
+            "tit": self.tit,
+            "source": self.source,
+            "desc": self.desc,
+            "origin": self.origin,
+            "like": self.like,
+            "dislike": self.dislike,
+            "clickcount": self.clickcount,
+            "type": self.type,
+            "tag": tag_int,
+            "mainTag": self.mainTag,
+            "posterImg": self.posterImg,
+            "country": self.country,
+            "state": self.state,
+            "city": self.city,
+            "isLike": isLike,
+            "isDisLike": isDisLike,
+            "isCollect": isCollect,
+            "likenum": likenum,
+            "dislikenum": dislikenum,
+            "collectnum": collectnum
+        }
 
 class CamMainTag(db.Model):
     __tablename__ = "cam_main_tag"
