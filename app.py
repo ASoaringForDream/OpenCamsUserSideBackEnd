@@ -1,4 +1,5 @@
 from flask import Flask
+import datetime
 from config import DevelopmentConfig
 from exts import config_extensions
 from blueprints import config_blueprint
@@ -15,11 +16,7 @@ config_blueprint(app)
 
 @app.route('/')
 def print_hi():
-    cams = Cam.query.all()
-    for item in cams:
-        print(item.score)
-        if item.score == None:
-            item.score = 0
-    datebase.session.commit()
+    time = datetime.timedelta(days=15)
+    print(datetime.date.today() - time)
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

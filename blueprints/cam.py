@@ -193,15 +193,8 @@ def clickCam():
     data = request.get_json()
     uid = data.get('uid')
     cid = data.get('cid')
-    res = Visit.query.filter(
-        and_(uid == Visit.uid),
-        and_(cid == Visit.cid)
-    ).first()
-    if res != None:
-        res.visittime = datetime.datetime.now()
-    else:
-        visit = Visit(uid=uid, cid=cid)
-        datebase.session.add(visit)
+    visit = Visit(uid=uid, cid=cid)
+    datebase.session.add(visit)
     cam = Cam.query.filter(Cam.id == cid).first()
     cam.clickcount = cam.clickcount + 1
     cam.score = cam.score + 1

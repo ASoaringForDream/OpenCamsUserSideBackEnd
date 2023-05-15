@@ -87,3 +87,39 @@ def addUser():
         "errmsg":''
     }
 
+@db.route('/edituser', methods=['POST'])
+def editUser():
+    data = request.get_json(silent=True)
+    id = data.get('id')
+    name = data.get('name')
+    sex = data.get('sex')
+    birth = data.get('birth')
+    telephone = data.get('telephone')
+    mailbox = data.get('mailbox')
+    userpic = data.get('userpic')
+
+    user = User.query.filter(User.id == id).first()
+    if name != None:
+        user.name = name
+    if sex != None:
+        user.sex = sex
+    if birth != None:
+        user.birth = birth
+    if telephone != None:
+        user.telephone = telephone
+    if mailbox != None:
+        curr = User.query.filter(User.mailbox == mailbox).first()
+        if curr != None and curr.id != id:
+            return {
+                "errno": 1,
+                "errmsg": '邮箱已存在!'
+            }
+        user.mailbox = mailbox
+    if userpic != None:
+        user.userpic = userpic
+    datebase.session.commit()
+
+    return {
+        "errno": 0,
+        "errmsg":''
+    }
