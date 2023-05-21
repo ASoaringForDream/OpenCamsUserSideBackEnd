@@ -1,11 +1,29 @@
 from flask import Blueprint, request
-import datetime
+import json
+from operator import itemgetter
 from sqlalchemy import and_
 from models.cam import Cam
 from models.operation import Like, DisLike, Collect, Visit
 from exts import db as datebase
 
 db = Blueprint("camdetail", __name__, url_prefix='/user')
+
+
+def recommend(user):
+    K = 20
+    rank = {}
+    with open('C:\\Users\\86176\\Desktop\\openCams\\OpenCamsUserSide\\dataSetICF.json', mode='r+') as f:
+        trainSet = json.loads(f.read())
+    with open('C:\\Users\\86176\\Desktop\\openCams\\OpenCamsUserSide\\SimMatrixICF.json', mode='r+') as f:
+        movie_sim_matrix = json.loads(f.read())
+    watched_movies = trainSet[user]
+    for movie, rating in watched_movies.items():
+        for related_movie, w in sorted(movie_sim_matrix[movie].items(), key=itemgetter(1), reverse=True)[:K]:
+            if related_movie in watched_movies:
+                continue
+            rank.setdefault(related_movie, 0)
+            rank[related_movie] += w * float(rating)
+    return sorted(rank.items(), key=itemgetter(1), reverse=True)
 
 @db.route('/cam', methods=['GET'])
 def queryCams():
@@ -49,14 +67,14 @@ def queryCams():
         isCollect = True
     if dislike != None:
         isDisLike = True
-    mainTag = cam.mainTag
-    recommend = Cam.query.filter(
-        and_(Cam.mainTag == mainTag),
-        and_(Cam.id != id)
-    ).order_by(Cam.score.desc()).limit(10).all()
+    ids = recommend(uid)
+    currIds = []
+    for item in ids:
+        currIds.append(int(item[0]))
+    rec = Cam.query.filter(Cam.id.in_(currIds), Cam.mainTag == cam.mainTag, Cam.id != cam.id).order_by(Cam.score.desc()).limit(10).all()
     res = []
-    for item in recommend:
-        res.append(item.to_json())
+    for i in rec:
+        res.append(i.to_json())
     return {
         "errno": 0,
         "errmsg": '',

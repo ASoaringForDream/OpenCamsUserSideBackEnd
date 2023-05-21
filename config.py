@@ -6,7 +6,7 @@ DATABASE = "open_cams"
 
 class Config:
     # 秘钥
-    SECRET_KEY = 'openCams'
+    SECRET_KEY = 'openCamsUserSide'
 
 class DevelopmentConfig(Config):
     SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://{USERNAME}:{PASSWORD}@{HOSTNAME}:{PORT}/{DATABASE}?charset=utf8"
