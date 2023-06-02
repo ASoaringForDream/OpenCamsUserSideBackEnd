@@ -29,6 +29,7 @@ def recommend(user):
 def queryCams():
     data = request.args
     id = data.get('id')
+    # print(id)
     uid = data.get('uid')
     cam = Cam.query.filter(Cam.id == id).first()
     like = Like.query.filter(

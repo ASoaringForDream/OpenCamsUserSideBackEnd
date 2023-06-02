@@ -11,7 +11,7 @@ from exts import db as datebase
 import random
 
 app = Flask(__name__)
-CORS(app, supports_credentials=True, origins='http://localhost:7001')
+CORS(app, supports_credentials=True, origins='http://localhost:7000')
 
 app.config.from_object(DevelopmentConfig)
 config_extensions(app)
@@ -19,24 +19,31 @@ config_blueprint(app)
 
 @app.route('/')
 def print_hi():
-    users = User.query.all()
     cams = Cam.query.all()
     res = []
-    for item in users:
-        allVisit = datebase.session.query(Visit.cid).filter(item.id == Visit.uid).group_by(Visit.cid).all()
-        # print(allVisit)
-        for i in allVisit:
-            cid = i[0]
-            visits = Visit.query.filter(item.id == Visit.uid).all()
-            dislike = DisLike.query.filter(item.id == DisLike.uid, cid == DisLike.cid).all()
-            like = Like.query.filter(item.id == DisLike.uid, cid == DisLike.cid).all()
-            collect = Collect.query.filter(item.id == Collect.uid, cid == Collect.cid).all()
-            count = len(visits) - 10 * len(dislike) + 10 * len(like) + 100 * len(collect)
-            string = str(item.id) + ',' + str(cid) + ',' + str(count) + '\n'
-            res.append(string)
-    with open(f'C:\\Users\\86176\\Desktop\\openCams\\OpenCamsUserSide\\{str(datetime.datetime.now()).replace(" ", "-").replace(":", "-").split(".")[0]}.csv', mode='w') as file:
-        file.writelines(res)
-    return str(datetime.datetime.now()).replace(' ', '-')
+    for i in cams:
+        res.append(i.to_json())
+        with open(f'C:\\Users\\86176\\Desktop\\cams\\{i.mainTag + random.random()}.txt', mode='w', encoding='utf-8') as file:
+            file.writelines(i.desc)
+    return res
+    # users = User.query.all()
+    # cams = Cam.query.all()
+    # res = []
+    # for item in users:
+    #     allVisit = datebase.session.query(Visit.cid).filter(item.id == Visit.uid).group_by(Visit.cid).all()
+    #     # print(allVisit)
+    #     for i in allVisit:
+    #         cid = i[0]
+    #         visits = Visit.query.filter(item.id == Visit.uid).all()
+    #         dislike = DisLike.query.filter(item.id == DisLike.uid, cid == DisLike.cid).all()
+    #         like = Like.query.filter(item.id == DisLike.uid, cid == DisLike.cid).all()
+    #         collect = Collect.query.filter(item.id == Collect.uid, cid == Collect.cid).all()
+    #         count = len(visits) - 10 * len(dislike) + 10 * len(like) + 100 * len(collect)
+    #         string = str(item.id) + ',' + str(cid) + ',' + str(count) + '\n'
+    #         res.append(string)
+    # with open(f'C:\\Users\\86176\\Desktop\\openCams\\OpenCamsUserSide\\{str(datetime.datetime.now()).replace(" ", "-").replace(":", "-").split(".")[0]}.csv', mode='w') as file:
+    #     file.writelines(res)
+    # return str(datetime.datetime.now()).replace(' ', '-')
 
 
 if __name__ == '__main__':

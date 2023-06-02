@@ -123,3 +123,22 @@ def editUser():
         "errno": 0,
         "errmsg":''
     }
+
+@db.route('/repassword', methods=['POST'])
+def rePassWord():
+    data = request.get_json(silent=True)
+    id = data.get('id')
+    password = data.get('password')
+    rePassword = data.get('rePassword')
+    user = User.query.filter(User.id == id).first()
+    if(user.password != password):
+        return {
+            "errno": 1,
+            "errmsg": "原密码输入错误"
+        }
+    user.password = rePassword
+    datebase.session.commit()
+    return {
+        "errno": 0,
+        "errmsg": ''
+    }
